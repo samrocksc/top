@@ -1,9 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import dotenv from 'dotenv';
-import { findUserByAuth0Id } from './db/userService';
-import prisma from './db/index';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import dotenv from "dotenv";
+import { findUserByAuth0Id } from "./db/userService";
+import prisma from "./db/index";
 
 dotenv.config();
 
@@ -16,30 +16,37 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello World!' });
+app.get("/", (req, res) => {
+  res.json({ message: "Hello World!" });
 });
 
-app.get('/health', async (req, res) => {
+app.get("/health", async (req, res) => {
   try {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: 'OK', message: 'Server is running and database is connected' });
-  } catch (error) {
-    res.status(500).json({ status: 'ERROR', message: 'Database connection failed', error: error.message });
+    res.json({
+      status: "OK",
+      message: "Server is running and database is connected",
+    });
+  } catch (error: unknown) {
+    res.status(500).json({
+      status: "ERROR",
+      message: "Database connection failed",
+      error: (error as Error).message,
+    });
   }
 });
 
-app.get('/user/:auth0Id', async (req, res) => {
+app.get("/user/:auth0Id", async (req, res) => {
   try {
     const user = await findUserByAuth0Id(req.params.auth0Id);
     if (user) {
       res.json(user);
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

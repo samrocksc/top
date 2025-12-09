@@ -22,7 +22,7 @@ const ThemeToggle = () => {
         theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
       }
     >
-      {theme === "dark" ? <span>☀️ Day</span> : <span>🌙 Night</span>}
+      {theme === "dark" ? <span>☀️</span> : <span>🌙</span>}
     </button>
   );
 };
