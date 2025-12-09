@@ -11,6 +11,7 @@ export default function Home() {
     <Container theme={theme}>
       <Link href="/lists/new">Create New List</Link>
       <Link href="/lists">View Lists</Link>
+      <Link href="/auth/login">Log In</Link>
       <Button variant="primary">Get Started</Button>
       <Button variant="secondary">Learn More</Button>
     </Container>

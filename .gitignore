@@ -37,3 +37,95 @@ docker-compose.override.yml
 # Database
 *.sqlite
 *.sqlite3
+
+# Security
+# Secret files and directories
+.secrets
+secrets/
+*.key
+*.pem
+*.crt
+*.cert
+*.p12
+*.pfx
+*.der
+*.csr
+*.pub
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+*.gpg
+*.pgp
+key.pem
+cert.pem
+private.key
+private_key.pem
+access_token
+api_key
+secret_key
+client_secret
+password
+passwd
+pwd
+credentials
+credential
+auth.json
+token
+.secret
+.secret.*
+config/secrets.yml
+config/secrets.yaml
+config/database.yml
+config/master.key
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Icon?
+~$*
+*.lnk
+
+# IDE specific files
+*.sublime-project
+*.sublime-workspace
+.atomspace
+.vs/
+*.vsidx
+*.vscdb
+.hg
+.svn
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+*~
+
+# Compiled files
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs
+logs/
+*.log
+
+# Temp files
+tmp/
+temp/
+```
