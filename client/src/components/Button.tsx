@@ -15,10 +15,10 @@ export const Button = ({
     "px-6 py-3 font-bold hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all border-2";
 
   const primaryClasses =
-    "bg-white dark:bg-gray-900 text-black dark:text-white border-black dark:border-white";
+    "bg-white dark:bg-black text-black dark:text-white border-black dark:border-white !text-black dark:!text-white";
 
   const secondaryClasses =
-    "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white";
+    "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white !text-white dark:!text-black";
 
   const variantClasses =
     variant === "primary" ? primaryClasses : secondaryClasses;
