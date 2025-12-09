@@ -125,3 +125,26 @@ sequenceDiagram
     API-->>App: Return user data
     App-->>User: Display application
 ```
+
+## Secret Management
+
+This repository has several measures in place to prevent secrets from being committed to the repository:
+
+1. **.gitignore**: The repository includes patterns to ignore common secret files like `.env`, `*.key`, `id_rsa`, etc.
+
+2. **Pre-commit Hook**: A pre-commit hook is installed locally to scan for potential secrets in staged files before committing.
+
+3. **Setup Script**: A script is provided at `scripts/setup-hooks.sh` to automatically install the pre-commit hook for new developers.
+
+4. **Best Practices**:
+   - Never commit actual secrets to the repository
+   - Use environment variables for configuration
+   - Store secrets in a secure vault or secret management system
+   - Use `.env.example` files to document required environment variables without including actual values
+
+5. **For Contributors**:
+   - Run `scripts/setup-hooks.sh` to install the pre-commit hook
+   - The pre-commit hook will warn you if potential secrets are detected
+   - If you see a warning, please review the file and remove or properly secure any sensitive information
+   - You can bypass the check with `git commit --no-verify` but only if you're certain it's safe to do so
+
