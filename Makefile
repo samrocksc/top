@@ -13,8 +13,8 @@ help:
 	@echo "  start            - Start all services"
 	@echo "  stop             - Stop all services"
 	@echo "  backend-dev      - Start backend in development mode"
-	@echo "  frontend-dev     - Start frontend in development mode"
 	@echo "  client-dev       - Start client in development mode"
+	@echo "  client-env-setup - Set up client environment with Auth0 configuration"
 	@echo "  migrate-dev      - Run database migrations for development"
 	@echo "  migrate-deploy   - Run database migrations for production"
 	@echo "  generate         - Generate Prisma client"
@@ -24,17 +24,15 @@ help:
 
 # Setup the entire application
 .PHONY: setup
-setup: install-deps generate migrate-dev
+setup: install-deps generate migrate-dev client-env-setup
 
 # Install dependencies for all services
 .PHONY: install-deps
 install-deps:
 	@echo "Installing backend dependencies..."
-	cd backend && $(NPM) install
-	@echo "Installing frontend dependencies..."
-	cd frontend && $(NPM) install
+	cd backend && $(NPM) install --legacy-peer-deps
 	@echo "Installing client dependencies..."
-	cd client && $(NPM) install
+	cd client && $(NPM) install --legacy-peer-deps
 
 # Generate Prisma client
 .PHONY: generate
@@ -72,15 +70,15 @@ backend-dev:
 	@echo "Starting backend in development mode..."
 	cd backend && $(NPM) run dev
 
-# Start frontend in development mode
-.PHONY: frontend-dev
-frontend-dev:
-	@echo "Starting frontend in development mode..."
-	cd frontend && $(NPM) run dev
+# Set up client environment with Auth0 configuration
+.PHONY: client-env-setup
+client-env-setup:
+	@echo "Setting up client environment..."
+	@cd client && $(NPM) run setup-env
 
 # Start client in development mode
 .PHONY: client-dev
-client-dev:
+client-dev: client-env-setup
 	@echo "Starting client in development mode..."
 	cd client && $(NPM) run dev
 

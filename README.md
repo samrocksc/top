@@ -1,7 +1,6 @@
 # Tens Application
 
 This is a full-stack application with:
-- Frontend admin panel built with Next.js and TypeScript
 - Client frontend built with Next.js and TypeScript
 - Backend API built with Express and TypeScript
 - PostgreSQL database
@@ -17,7 +16,6 @@ This is a full-stack application with:
 │   │   └── index.ts  # Main server file
 │   ├── prisma/       # Prisma schema and migrations
 │   └── package.json  # Backend dependencies
-├── frontend/         # Admin panel (Next.js)
 ├── client/           # Client frontend (Next.js)
 ├── docker-compose.yml # Docker services configuration
 └── Makefile          # Build and deployment commands
@@ -40,14 +38,15 @@ This is a full-stack application with:
    make migrate-dev
    ```
 
-4. **Start the backend:**
+4. **Set up Auth0 configuration:**
+   ```bash
+   make client-env-setup
+   ```
+   This will create a `.env.local` file in the client directory with Auth0 configuration. You'll need to update the placeholder values with your actual Auth0 credentials.
+
+5. **Start the backend:**
    ```bash
    make backend-dev
-   ```
-
-5. **Start the frontend admin panel:**
-   ```bash
-   make frontend-dev
    ```
 
 6. **Start the client frontend:**
@@ -61,8 +60,8 @@ This is a full-stack application with:
 - `make start` - Start all services
 - `make stop` - Stop all services
 - `make backend-dev` - Start backend in development mode
-- `make frontend-dev` - Start frontend in development mode
 - `make client-dev` - Start client in development mode
+- `make client-env-setup` - Set up client environment with Auth0 configuration
 - `make migrate-dev` - Run database migrations for development
 - `make generate` - Generate Prisma client
 - `make reset-db` - Reset the database
@@ -74,5 +73,55 @@ This is a full-stack application with:
 - **PostgreSQL**: localhost:5432
 - **Redis**: localhost:6379
 - **Backend API**: localhost:8000
-- **Frontend Admin**: localhost:3000
 - **Client Frontend**: localhost:3001
+
+## Auth0 Setup
+
+To set up Auth0 authentication:
+
+1. Create an Auth0 account at [auth0.com](https://auth0.com/)
+2. Create a new application in your Auth0 dashboard
+3. Configure the application settings:
+   - Application Type: Regular Web Application
+   - Allowed Callback URLs: http://localhost:3001/api/auth/callback
+   - Allowed Logout URLs: http://localhost:3001
+   - Allowed Web Origins: http://localhost:3001
+
+4. Run the client environment setup:
+   ```bash
+   make client-env-setup
+   ```
+
+5. Update the `.env.local` file in the `client` directory with your Auth0 credentials:
+   - `AUTH0_ISSUER_BASE_URL`: Your Auth0 domain (e.g., https://your-domain.auth0.com)
+   - `AUTH0_CLIENT_ID`: Your Auth0 application client ID
+   - `AUTH0_CLIENT_SECRET`: Your Auth0 application client secret
+
+## Auth Workflow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Auth0
+    participant App
+    participant API
+    participant DB
+    
+    User->>App: Initiate login
+    App->>Auth0: Redirect to Auth0 login
+    Auth0->>User: Display login page
+    User->>Auth0: Submit credentials
+    Auth0->>App: Redirect back with ID token
+    App->>API: Send ID token to API
+    API->>Auth0: Validate token (optional)
+    Auth0-->>API: Token validation response
+    API->>DB: Query for user with auth0_id = user_id
+    alt User exists
+        DB-->>API: Return user record
+    else User doesn't exist
+        API->>DB: Create new user record with auth0_id
+        DB-->>API: Return new user record
+    end
+    API-->>App: Return user data
+    App-->>User: Display application
+```
