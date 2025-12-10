@@ -4,6 +4,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import { findUserByAuth0Id } from "./db/userService";
 import prisma from "./db/index";
+import { auth } from 'express-oauth2-jwt-bearer';
 
 dotenv.config();
 
@@ -14,6 +15,12 @@ const PORT = process.env.PORT || 8000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(
+  auth({
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+    audience: process.env.AUDIENCE,
+  })
+);
 
 // Routes
 app.get("/", (req, res) => {
