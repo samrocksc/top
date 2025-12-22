@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
@@ -30,7 +30,7 @@ const PORT = process.env.PORT || 8000;
 const specs = swaggerJsdoc(swaggerOptions);
 
 // Add logging middleware
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   logger.info({
     msg: 'Incoming request',
     method: req.method,
@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // Serve the OpenAPI specification as JSON
-app.get("/openapi.json", (req, res) => {
+app.get("/openapi.json", (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/json");
   res.send(specs);
 });
@@ -73,7 +73,7 @@ app.use(express.json());
  *                   type: string
  *                   example: Hello World!
  */
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Hello World!" });
 });
 
@@ -97,7 +97,7 @@ app.get("/", (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/HealthErrorResponse'
  */
-app.get("/health", async (req, res) => {
+app.get("/health", async (req: Request, res: Response) => {
   try {
     // Test database connection
     await prisma.$queryRaw`SELECT 1`;
@@ -157,7 +157,7 @@ app.get("/health", async (req, res) => {
  *                   type: string
  *                   example: Internal server error
  */
-app.get("/user/:auth0Id", requireAuth, async (req, res) => {
+app.get("/user/:auth0Id", requireAuth, async (req: Request, res: Response) => {
   try {
     const user = await findUserByAuth0Id(req.params.auth0Id);
     if (user) {
@@ -203,7 +203,7 @@ app.get("/user/:auth0Id", requireAuth, async (req, res) => {
  *                   type: string
  *                   example: Unauthorized
  */
-app.get("/checkJwt", requireAuth, (req, res) => {
+app.get("/checkJwt", requireAuth, (req: Request, res: Response) => {
   logger.info({
     msg: 'Check JWT endpoint called',
     url: req.url,
@@ -252,7 +252,7 @@ app.get("/checkJwt", requireAuth, (req, res) => {
  *                   format: date-time
  *                   example: "2023-01-01T00:00:00.000Z"
  */
-app.get("/unauthenticated", (req, res) => {
+app.get("/unauthenticated", (req: Request, res: Response) => {
   res.json({
     message: "This is an unauthenticated endpoint",
     timestamp: new Date().toISOString(),
@@ -296,7 +296,7 @@ app.get("/unauthenticated", (req, res) => {
  *                   type: string
  *                   example: Unauthorized
  */
-app.get("/authenticated", requireAuth, (req, res) => {
+app.get("/authenticated", requireAuth, (req: Request, res: Response) => {
   logger.info({
     msg: 'Authenticated endpoint called',
     url: req.url,
@@ -324,7 +324,7 @@ app.get("/authenticated", requireAuth, (req, res) => {
 });
 
 // Error handling middleware for authentication errors
-app.use((err: any, req: any, res: any, next: any) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   // Check if this is a JWT authentication error from express-oauth2-jwt-bearer
   if (
     err.name === "UnauthorizedError" ||
@@ -346,7 +346,8 @@ app.use((err: any, req: any, res: any, next: any) => {
     stack: err.stack,
     url: req.url
   });
-  next(err);
+  // Always call next or send response
+  return next(err);
 });
 
 // Server setup
