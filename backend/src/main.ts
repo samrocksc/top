@@ -4,10 +4,10 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import { findUserByAuth0Id } from "./db/userService";
 import prisma from "./db/index";
-import { auth } from "express-oauth2-jwt-bearer";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import swaggerOptions from "./config/openapi";
+import { requireAuth } from "./middleware/auth";
 
 dotenv.config();
 
@@ -28,17 +28,6 @@ app.get("/openapi.json", (req, res) => {
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-app.use(
-  auth({
-    audience:
-      process.env.AUTH0_API_AUDIENCE ||
-      process.env.AUTH0_AUDIENCE ||
-      process.env.AUDIENCE ||
-      `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
-    issuerBaseURL:
-      process.env.AUTH0_ISSUER_BASE_URL || `https://${process.env.AUTH0_DOMAIN}`,
-  }),
-);
 
 /**
  * @openapi
@@ -143,7 +132,7 @@ app.get("/health", async (req, res) => {
  *                   type: string
  *                   example: Internal server error
  */
-app.get("/user/:auth0Id", async (req, res) => {
+app.get("/user/:auth0Id", requireAuth, async (req, res) => {
   try {
     const user = await findUserByAuth0Id(req.params.auth0Id);
     if (user) {
@@ -189,20 +178,116 @@ app.get("/user/:auth0Id", async (req, res) => {
  *                   type: string
  *                   example: Unauthorized
  */
-app.get("/checkJwt", (req, res) => {
+app.get("/checkJwt", requireAuth, (req, res) => {
   // The auth middleware already verified the token
   // req.auth contains the decoded token information
   // @ts-ignore
   const userId = req.auth?.payload?.sub;
-  
+
   if (userId) {
-    res.json({ 
+    res.json({
       message: "Token is valid",
-      userId: userId
+      userId: userId,
     });
   } else {
     res.status(401).json({ error: "Unauthorized" });
   }
+});
+
+/**
+ * @openapi
+ * /unauthenticated:
+ *   get:
+ *     summary: Unauthenticated test endpoint
+ *     description: Public endpoint that doesn't require authentication
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: This is an unauthenticated endpoint
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2023-01-01T00:00:00.000Z"
+ */
+app.get("/unauthenticated", (req, res) => {
+  res.json({
+    message: "This is an unauthenticated endpoint",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+/**
+ * @openapi
+ * /authenticated:
+ *   get:
+ *     summary: Authenticated test endpoint
+ *     description: Protected endpoint that requires authentication
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successful response with user information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: This is an authenticated endpoint
+ *                 userId:
+ *                   type: string
+ *                   example: auth0|123456789
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2023-01-01T00:00:00.000Z"
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ */
+app.get("/authenticated", requireAuth, (req, res) => {
+  // @ts-ignore
+  const userId = req.auth?.payload?.sub;
+
+  if (userId) {
+    res.json({
+      message: "This is an authenticated endpoint",
+      userId: userId,
+      timestamp: new Date().toISOString(),
+    });
+  } else {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});
+
+// Error handling middleware for authentication errors
+app.use((err: any, req: any, res: any, next: any) => {
+  // Check if this is a JWT authentication error from express-oauth2-jwt-bearer
+  if (
+    err.name === "UnauthorizedError" ||
+    err.code === "invalid_token" ||
+    err.code === "credentials_required" ||
+    (err.statusCode && err.statusCode >= 400 && err.statusCode < 500)
+  ) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next(err);
 });
 
 // Server setup

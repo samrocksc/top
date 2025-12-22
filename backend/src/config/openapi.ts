@@ -90,6 +90,40 @@ const swaggerOptions: Options = {
           },
           required: ['status', 'message', 'error'],
         },
+        UnauthenticatedResponse: {
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string',
+              example: 'This is an unauthenticated endpoint',
+            },
+            timestamp: {
+              type: 'string',
+              format: 'date-time',
+              example: '2023-01-01T00:00:00.000Z',
+            },
+          },
+          required: ['message', 'timestamp'],
+        },
+        AuthenticatedResponse: {
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string',
+              example: 'This is an authenticated endpoint',
+            },
+            userId: {
+              type: 'string',
+              example: 'auth0|123456789',
+            },
+            timestamp: {
+              type: 'string',
+              format: 'date-time',
+              example: '2023-01-01T00:00:00.000Z',
+            },
+          },
+          required: ['message', 'userId', 'timestamp'],
+        },
       },
     },
     security: [
