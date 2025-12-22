@@ -2,15 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.ts",
+  "main": "src/server.ts",
   "scripts": {
     "build": "npx tsc",
     "clean": "rm -rf dist",
-    "run": "npx ts-node src/main.ts",
-    "start": "node dist/main.js",
-    "dev": "npx nodemon --exec npx ts-node src/main.ts",
+    "run": "npx ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "dev": "npx nodemon --exec npx ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "vercel-build": "npx prisma migrate deploy && prisma generate && npx tsc"
+    "vercel-build": "npx prisma migrate deploy && prisma generate && npx tsc && ls dist"
   },
   "keywords": [],
   "author": "",

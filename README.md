@@ -13,7 +13,7 @@ This is a full-stack application with:
 ├── backend/          # Express TypeScript API
 │   ├── src/          # Source code
 │   │   ├── db/       # Database layer with Prisma
-│   │   └── main.ts   # Main server file
+│   │   └── server.ts   # Main server file
 │   ├── prisma/       # Prisma schema and migrations
 │   └── package.json  # Backend dependencies
 ├── client/           # Client frontend (Next.js)
