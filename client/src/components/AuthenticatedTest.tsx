@@ -40,8 +40,7 @@ export default function AuthenticatedTest() {
               This is expected without a valid authentication token.
             </p>
             <p className="text-sm mt-1">
-              Status code: {error?.status || "Unknown"}. Try logging in first to
-              test this endpoint with proper authentication.
+              Try logging in first to test this endpoint with proper authentication.
             </p>
           </div>
         )}

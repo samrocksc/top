@@ -71,6 +71,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Authentication error:', error);
-    return new NextResponse(`Authentication failed: ${error.message}`, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return new NextResponse(`Authentication failed: ${errorMessage}`, { status: 500 });
   }
 }
