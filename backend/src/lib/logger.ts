@@ -1,8 +1,19 @@
 import pino from 'pino';
 
-const logger = pino({
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+const loggerConfig: pino.LoggerOptions = {
   level: process.env.LOG_LEVEL || 'info',
-  transport: {
+  serializers: {
+    req: pino.stdSerializers.req,
+    res: pino.stdSerializers.res,
+    err: pino.stdSerializers.err,
+  },
+};
+
+// Only add transport configuration in development
+if (isDevelopment) {
+  loggerConfig.transport = {
     target: 'pino-pretty',
     options: {
       colorize: true,
@@ -10,12 +21,9 @@ const logger = pino({
       translateTime: 'SYS:standard',
       ignore: 'pid,hostname',
     },
-  },
-  serializers: {
-    req: pino.stdSerializers.req,
-    res: pino.stdSerializers.res,
-    err: pino.stdSerializers.err,
-  },
-});
+  };
+}
+
+const logger = pino(loggerConfig);
 
 export default logger;
