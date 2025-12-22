@@ -41,16 +41,34 @@ export async function GET(request: NextRequest) {
     
     const tokens = await tokenResponse.json();
     
-    // Set a cookie to indicate the user is logged in
-    const response = NextResponse.redirect(process.env.NEXT_AUTH0_BASE_URL || 'http://localhost:3000');
-    response.cookies.set('auth0.isAuthenticated', 'true', {
-      httpOnly: false, // Allow client-side access for demo purposes
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: '/',
-    });
+    console.log('Received tokens from Auth0:', Object.keys(tokens));
     
-    return response;
+    // Create a simple HTML page that stores the token in localStorage and redirects
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Authentication Success</title>
+      </head>
+      <body>
+        <script>
+          // Store the access token in localStorage
+          ${tokens.access_token ? `localStorage.setItem('auth0.access_token', '${tokens.access_token}');` : ''}
+          localStorage.setItem('auth0.isAuthenticated', 'true');
+          
+          // Redirect to the main application
+          window.location.href = '${process.env.NEXT_AUTH0_BASE_URL || 'http://localhost:3000'}';
+        </script>
+      </body>
+      </html>
+    `;
+    
+    return new NextResponse(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    });
   } catch (error) {
     console.error('Authentication error:', error);
     return new NextResponse(`Authentication failed: ${error.message}`, { status: 500 });

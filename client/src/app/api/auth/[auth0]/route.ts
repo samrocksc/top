@@ -26,10 +26,32 @@ export async function GET(request: NextRequest) {
     logoutUrl.searchParams.set('returnTo', process.env.NEXT_AUTH0_BASE_URL || 'http://localhost:3000');
     logoutUrl.searchParams.set('client_id', process.env.NEXT_AUTH0_CLIENT_ID || '');
     
-    // Clear our auth cookie
-    const response = NextResponse.redirect(logoutUrl.toString());
-    response.cookies.delete('auth0.isAuthenticated');
-    return response;
+    // Create a simple HTML page that clears localStorage and redirects
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Logging Out</title>
+      </head>
+      <body>
+        <script>
+          // Clear authentication data from localStorage
+          localStorage.removeItem('auth0.isAuthenticated');
+          localStorage.removeItem('auth0.access_token');
+          
+          // Redirect to Auth0 for logout
+          window.location.href = '${logoutUrl.toString()}';
+        </script>
+      </body>
+      </html>
+    `;
+    
+    return new NextResponse(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    });
   }
   
   // Don't handle callback here, let the dedicated callback route handle it

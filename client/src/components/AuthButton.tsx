@@ -9,10 +9,24 @@ export default function AuthButton() {
   useEffect(() => {
     // Simple check for authentication status
     const checkAuthStatus = () => {
-      // Check for the auth cookie
-      const hasAuthSession = document.cookie.includes('auth0.isAuthenticated=true');
+      // Check for the auth status in localStorage
+      const hasAuthSession = typeof window !== 'undefined' && localStorage.getItem('auth0.isAuthenticated') === 'true';
       
       console.log('Auth status check:', hasAuthSession);
+      if (typeof window !== 'undefined') {
+        console.log('All localStorage items:', {...localStorage});
+      }
+      
+      // Also check for access token
+      if (typeof window !== 'undefined') {
+        const accessToken = localStorage.getItem('auth0.access_token');
+        if (accessToken) {
+          console.log('Found access token in localStorage, length:', accessToken.length);
+        } else {
+          console.log('No access token found in localStorage');
+        }
+      }
+      
       setIsLoggedIn(hasAuthSession);
       setLoading(false);
     };
