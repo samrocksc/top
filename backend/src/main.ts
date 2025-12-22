@@ -8,12 +8,24 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import swaggerOptions from "./config/openapi";
 import { requireAuth } from "./middleware/auth";
+import logger from "./lib/logger";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 const specs = swaggerJsdoc(swaggerOptions);
+
+// Add logging middleware
+app.use((req, res, next) => {
+  logger.info({
+    msg: 'Incoming request',
+    method: req.method,
+    url: req.url,
+    ip: req.ip
+  });
+  next();
+});
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
@@ -179,17 +191,27 @@ app.get("/user/:auth0Id", requireAuth, async (req, res) => {
  *                   example: Unauthorized
  */
 app.get("/checkJwt", requireAuth, (req, res) => {
-  // The auth middleware already verified the token
-  // req.auth contains the decoded token information
+  logger.info({
+    msg: 'Check JWT endpoint called',
+    url: req.url,
+    headers: req.headers
+  });
+  
   // @ts-ignore
   const userId = req.auth?.payload?.sub;
 
   if (userId) {
+    logger.info({
+      msg: 'JWT validation successful',
+      userId: userId
+    });
+    
     res.json({
       message: "Token is valid",
       userId: userId,
     });
   } else {
+    logger.warn('No user ID found in token');
     res.status(401).json({ error: "Unauthorized" });
   }
 });
@@ -262,16 +284,28 @@ app.get("/unauthenticated", (req, res) => {
  *                   example: Unauthorized
  */
 app.get("/authenticated", requireAuth, (req, res) => {
+  logger.info({
+    msg: 'Authenticated endpoint called',
+    url: req.url,
+    headers: req.headers
+  });
+  
   // @ts-ignore
   const userId = req.auth?.payload?.sub;
 
   if (userId) {
+    logger.info({
+      msg: 'Authenticated request successful',
+      userId: userId
+    });
+    
     res.json({
       message: "This is an authenticated endpoint",
       userId: userId,
       timestamp: new Date().toISOString(),
     });
   } else {
+    logger.warn('No user ID found in authenticated request');
     res.status(401).json({ error: "Unauthorized" });
   }
 });
@@ -285,12 +319,27 @@ app.use((err: any, req: any, res: any, next: any) => {
     err.code === "credentials_required" ||
     (err.statusCode && err.statusCode >= 400 && err.statusCode < 500)
   ) {
+    logger.warn({
+      msg: 'Authentication error caught by error handler',
+      error: err.message,
+      url: req.url
+    });
     return res.status(401).json({ error: "Unauthorized" });
   }
+  
+  logger.error({
+    msg: 'Unexpected error',
+    error: err.message,
+    stack: err.stack,
+    url: req.url
+  });
   next(err);
 });
 
 // Server setup
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  logger.info({
+    msg: `Server is running on port ${PORT}`,
+    port: PORT
+  });
 });
