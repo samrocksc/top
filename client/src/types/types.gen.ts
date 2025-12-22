@@ -122,3 +122,36 @@ export type GetUserByAuth0IdResponses = {
 };
 
 export type GetUserByAuth0IdResponse = GetUserByAuth0IdResponses[keyof GetUserByAuth0IdResponses];
+
+export type GetCheckJwtData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/checkJwt';
+};
+
+export type GetCheckJwtErrors = {
+    /**
+     * Unauthorized - Invalid or missing token
+     */
+    401: {
+        error?: string;
+    };
+};
+
+export type GetCheckJwtError = GetCheckJwtErrors[keyof GetCheckJwtErrors];
+
+export type GetCheckJwtResponses = {
+    /**
+     * Token is valid
+     */
+    200: {
+        message?: string;
+        /**
+         * The user ID from the token
+         */
+        userId?: string;
+    };
+};
+
+export type GetCheckJwtResponse = GetCheckJwtResponses[keyof GetCheckJwtResponses];

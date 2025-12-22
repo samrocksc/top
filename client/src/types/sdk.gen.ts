@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetData, GetHealthData, GetHealthErrors, GetHealthResponses, GetResponses, GetUserByAuth0IdData, GetUserByAuth0IdErrors, GetUserByAuth0IdResponses } from './types.gen';
+import type { GetCheckJwtData, GetCheckJwtErrors, GetCheckJwtResponses, GetData, GetHealthData, GetHealthErrors, GetHealthResponses, GetResponses, GetUserByAuth0IdData, GetUserByAuth0IdErrors, GetUserByAuth0IdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -44,5 +44,16 @@ export const getHealth = <ThrowOnError extends boolean = false>(options?: Option
 export const getUserByAuth0Id = <ThrowOnError extends boolean = false>(options: Options<GetUserByAuth0IdData, ThrowOnError>) => (options.client ?? client).get<GetUserByAuth0IdResponses, GetUserByAuth0IdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/user/{auth0Id}',
+    ...options
+});
+
+/**
+ * Verify JWT token
+ *
+ * Endpoint to verify that the JWT token is valid
+ */
+export const getCheckJwt = <ThrowOnError extends boolean = false>(options?: Options<GetCheckJwtData, ThrowOnError>) => (options?.client ?? client).get<GetCheckJwtResponses, GetCheckJwtErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/checkJwt',
     ...options
 });
