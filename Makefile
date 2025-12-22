@@ -116,7 +116,7 @@ rebuild: clean setup start
 .PHONY: generate-frontend-types
 generate-frontend-types:
 	@echo "Generating frontend types from OpenAPI spec..."
-	@cd client && npx @hey-api/openapi-ts -i http://localhost:8000/openapi.json -o src/types
+	@cd client && npx @hey-api/openapi-ts
 
 # Start backend and frontend in development mode
 .PHONY: dev

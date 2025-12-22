@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup-env": "node scripts/setup-env.js"
+    "setup-env": "node scripts/setup-env.js",
+    "generate-types": "openapi-ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.14.0",

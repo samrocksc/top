@@ -1,4 +1,4 @@
-import { getAuthenticated } from "@/types/sdk.gen";
+import { getAuthenticated } from "@/types/custom-index";
 import { getStoredToken } from "@/lib/auth";
 
 // Wrapper function that adds authentication headers

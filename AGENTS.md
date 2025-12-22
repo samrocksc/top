@@ -93,6 +93,12 @@ make clean
 make rebuild
 ```
 
+### Backend Development
+```bash
+# To start the backend server, use:
+npm run dev
+```
+
 ## Backend API
 
 The backend is an Express.js server running on port 8000 with:

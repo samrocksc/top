@@ -1,4 +1,4 @@
-import { getUnauthenticated } from "@/types/sdk.gen";
+import { getUnauthenticated } from "@/types/custom-index";
 
 export const fetchUnauthenticatedData = () => {
   return getUnauthenticated();
