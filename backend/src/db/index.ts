@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Debug: Log the DATABASE_URL to verify it's loaded
+// eslint-disable-next-line no-console
 console.log("DATABASE_URL:", process.env.DATABASE_URL ? "Loaded" : "Not found");
 
 // Create PostgreSQL pool for Prisma 7 adapter

@@ -1,4 +1,5 @@
 import { auth } from "express-oauth2-jwt-bearer";
+import { Request, Response, NextFunction } from "express";
 import logger from "../lib/logger";
 
 // Create the base authentication middleware
@@ -13,7 +14,7 @@ const authenticateJwt = auth({
 });
 
 // Create a wrapper middleware that ensures consistent 401 responses
-const requireAuth = (req: any, res: any, next: any) => {
+const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
   // Log the incoming request details
   logger.info({
     msg: 'Auth middleware processing request',
@@ -29,14 +30,15 @@ const requireAuth = (req: any, res: any, next: any) => {
   // If no authorization header, return 401 immediately
   if (!authHeader) {
     logger.warn('No Authorization header found in request');
-    return res.status(401).json({ error: "Unauthorized - No Authorization header" });
+    res.status(401).json({ error: "Unauthorized - No Authorization header" });
+    return;
   }
   
   // Log the token format
   logger.debug('Authorization header format: ' + authHeader.substring(0, 20) + '...');
   
   // If authorization header exists, proceed with JWT authentication
-  authenticateJwt(req, res, (err) => {
+  authenticateJwt(req, res, (err: any) => {
     if (err) {
       logger.error({
         msg: 'Authentication error',
@@ -44,10 +46,11 @@ const requireAuth = (req: any, res: any, next: any) => {
         stack: err.stack
       });
       // Convert any authentication errors to 401
-      return res.status(401).json({ 
+      res.status(401).json({ 
         error: "Unauthorized - Invalid token",
         details: err.message 
       });
+      return;
     }
     
     // Log successful authentication
@@ -63,4 +66,3 @@ const requireAuth = (req: any, res: any, next: any) => {
 };
 
 export { requireAuth };
-
