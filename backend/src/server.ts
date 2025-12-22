@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 import { findUserByAuth0Id } from "./db/userService";
 import prisma from "./db/index";
 import swaggerJsdoc from "swagger-jsdoc";
@@ -10,7 +12,18 @@ import swaggerOptions from "./config/openapi";
 import { requireAuth } from "./middleware/auth";
 import logger from "./lib/logger";
 
-dotenv.config();
+// Only load dotenv if .env file exists
+const envPath = path.resolve(process.cwd(), '.env');
+if (fs.existsSync(envPath)) {
+  const result = dotenv.config();
+  if (result.error) {
+    logger.warn({ msg: 'Failed to load .env file', error: result.error.message });
+  } else {
+    logger.info('Loaded environment variables from .env file');
+  }
+} else {
+  logger.info('No .env file found, using environment variables');
+}
 
 const app = express();
 const PORT = process.env.PORT || 8000;
