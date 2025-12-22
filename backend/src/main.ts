@@ -156,6 +156,55 @@ app.get("/user/:auth0Id", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /checkJwt:
+ *   get:
+ *     summary: Verify JWT token
+ *     description: Endpoint to verify that the JWT token is valid
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Token is valid
+ *                 userId:
+ *                   type: string
+ *                   description: The user ID from the token
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ */
+app.get("/checkJwt", (req, res) => {
+  // The auth middleware already verified the token
+  // req.auth contains the decoded token information
+  // @ts-ignore
+  const userId = req.auth?.payload?.sub;
+  
+  if (userId) {
+    res.json({ 
+      message: "Token is valid",
+      userId: userId
+    });
+  } else {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});
+
 // Server setup
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
