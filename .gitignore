@@ -129,3 +129,5 @@ logs/
 tmp/
 temp/
 *blah/
+.vercel
+.env*.local
