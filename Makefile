@@ -106,7 +106,7 @@ logs:
 .PHONY: clean
 clean:
 	@echo "Cleaning up..."
-	@pkill -f "ts-node src/index.ts" || true
+	@pkill -f "ts-node src/main.ts" || true
 	$(DOCKER_COMPOSE) down -v
 
 # Reset and rebuild everything

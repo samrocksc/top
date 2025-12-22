@@ -19,7 +19,7 @@ This is a full-stack TypeScript application with:
 │   ├── src/          # Source code
 │   │   ├── db/       # Database layer with Prisma
 │   │   ├── config/   # Configuration files (OpenAPI)
-│   │   └── index.ts  # Main server file
+│   │   └── main.ts   # Main server file
 │   ├── prisma/       # Prisma schema and migrations
 │   ├── scripts/      # Utility scripts
 │   └── package.json  # Backend dependencies
@@ -184,7 +184,7 @@ model User {
 
 ### Backend API Endpoints
 1. Add route with JSDoc OpenAPI annotations
-2. Implement route handler in `src/index.ts`
+2. Implement route handler in `src/main.ts`
 3. Add service functions in `src/db/` as needed
 4. Run `make generate-openapi` to update specification
 5. Run `make generate-frontend-types` to update frontend types
