@@ -98,7 +98,7 @@ const swaggerOptions: Options = {
       },
     ],
   },
-  apis: ['./src/index.ts'], // Path to the API docs
+  apis: ['./src/main.ts'], // Path to the API docs
 };
 
 export default swaggerOptions;

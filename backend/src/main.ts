@@ -4,10 +4,10 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import { findUserByAuth0Id } from "./db/userService";
 import prisma from "./db/index";
-import { auth } from 'express-oauth2-jwt-bearer';
-import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
-import swaggerOptions from './config/openapi';
+import { auth } from "express-oauth2-jwt-bearer";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import swaggerOptions from "./config/openapi";
 
 dotenv.config();
 
@@ -16,11 +16,11 @@ const PORT = process.env.PORT || 8000;
 const specs = swaggerJsdoc(swaggerOptions);
 
 // Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // Serve the OpenAPI specification as JSON
-app.get('/openapi.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
+app.get("/openapi.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
   res.send(specs);
 });
 
@@ -30,9 +30,14 @@ app.use(cors());
 app.use(express.json());
 app.use(
   auth({
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-    audience: process.env.AUDIENCE,
-  })
+    audience:
+      process.env.AUTH0_API_AUDIENCE ||
+      process.env.AUTH0_AUDIENCE ||
+      process.env.AUDIENCE ||
+      `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
+    issuerBaseURL:
+      process.env.AUTH0_ISSUER_BASE_URL || `https://${process.env.AUTH0_DOMAIN}`,
+  }),
 );
 
 /**
