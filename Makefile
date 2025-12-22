@@ -22,7 +22,6 @@ help:
 	@echo "  reset-db         - Reset the database"
 	@echo "  logs             - View logs for all services"
 	@echo "  clean            - Stop and remove all containers"
-	@echo "  generate-openapi - Generate OpenAPI specification"
 	@echo "  generate-frontend-types - Generate frontend TypeScript types from OpenAPI spec"
 
 # Setup the entire application
@@ -42,6 +41,12 @@ install-deps:
 generate:
 	@echo "Generating Prisma client..."
 	cd backend && $(PRISMA) generate
+
+# Start all services
+.PHONY: start
+start:
+	@echo "Starting all services..."
+	$(DOCKER_COMPOSE) up -d
 
 # Run database migrations for development
 .PHONY: migrate-dev
@@ -108,17 +113,10 @@ clean:
 .PHONY: rebuild
 rebuild: clean setup start
 
-# Generate OpenAPI specification
-.PHONY: generate-openapi
-generate-openapi:
-	@echo "Generating OpenAPI specification..."
-	cd backend && $(NPM) run generate-openapi
-
-# Generate frontend types from OpenAPI spec
 .PHONY: generate-frontend-types
-generate-frontend-types: generate-openapi
+generate-frontend-types:
 	@echo "Generating frontend types from OpenAPI spec..."
-	@cd client && npx @hey-api/openapi-ts -i http://localhost:3000/api-docs/openapi.json -o src/types || true
+	@cd client && npx @hey-api/openapi-ts -i http://localhost:8000/openapi.json -o src/types
 
 # Start backend and frontend in development mode
 .PHONY: dev
