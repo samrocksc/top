@@ -12,8 +12,9 @@ help:
 	@echo "  setup            - Set up the entire application"
 	@echo "  start            - Start all services"
 	@echo "  stop             - Stop all services"
+	@echo "  dev              - Start backend and frontend in development mode"
 	@echo "  backend-dev      - Start backend in development mode"
-	@echo "  client-dev       - Start client in development mode"
+	@echo "  client-dev       - Start client in development mode (also starts backend)"
 	@echo "  client-env-setup - Set up client environment with Auth0 configuration"
 	@echo "  migrate-dev      - Run database migrations for development"
 	@echo "  migrate-deploy   - Run database migrations for production"
@@ -21,6 +22,8 @@ help:
 	@echo "  reset-db         - Reset the database"
 	@echo "  logs             - View logs for all services"
 	@echo "  clean            - Stop and remove all containers"
+	@echo "  generate-openapi - Generate OpenAPI specification"
+	@echo "  generate-frontend-types - Generate frontend TypeScript types from OpenAPI spec"
 
 # Setup the entire application
 .PHONY: setup
@@ -98,8 +101,38 @@ logs:
 .PHONY: clean
 clean:
 	@echo "Cleaning up..."
+	@pkill -f "ts-node src/index.ts" || true
 	$(DOCKER_COMPOSE) down -v
 
 # Reset and rebuild everything
 .PHONY: rebuild
 rebuild: clean setup start
+
+# Generate OpenAPI specification
+.PHONY: generate-openapi
+generate-openapi:
+	@echo "Generating OpenAPI specification..."
+	cd backend && $(NPM) run generate-openapi
+
+# Generate frontend types from OpenAPI spec
+.PHONY: generate-frontend-types
+generate-frontend-types: generate-openapi
+	@echo "Generating frontend types from OpenAPI spec..."
+	@cd client && npx @hey-api/openapi-ts -i http://localhost:3000/api-docs/openapi.json -o src/types || true
+
+# Start backend and frontend in development mode
+.PHONY: dev
+dev: client-dev
+
+# Start client in development mode
+.PHONY: client-dev
+client-dev: client-env-setup
+	@echo "Starting backend in background and client in development mode..."
+	@cd backend && $(NPM) run dev > /tmp/backend.log 2>&1 & \
+	echo "Waiting for backend to start..."; \
+	sleep 5; \
+	echo "Generating frontend types..."; \
+	$(MAKE) generate-frontend-types; \
+	echo "Backend started and types generated."; \
+	echo "Starting client in development mode..."; \
+	cd client && $(NPM) run dev
