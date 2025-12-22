@@ -42,6 +42,17 @@ export type HealthErrorResponse = {
     error: string;
 };
 
+export type UnauthenticatedResponse = {
+    message: string;
+    timestamp: string;
+};
+
+export type AuthenticatedResponse = {
+    message: string;
+    userId: string;
+    timestamp: string;
+};
+
 export type GetData = {
     body?: never;
     path?: never;
@@ -155,3 +166,53 @@ export type GetCheckJwtResponses = {
 };
 
 export type GetCheckJwtResponse = GetCheckJwtResponses[keyof GetCheckJwtResponses];
+
+export type GetUnauthenticatedData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/unauthenticated';
+};
+
+export type GetUnauthenticatedResponses = {
+    /**
+     * Successful response
+     */
+    200: {
+        message?: string;
+        timestamp?: string;
+    };
+};
+
+export type GetUnauthenticatedResponse = GetUnauthenticatedResponses[keyof GetUnauthenticatedResponses];
+
+export type GetAuthenticatedData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/authenticated';
+};
+
+export type GetAuthenticatedErrors = {
+    /**
+     * Unauthorized - Invalid or missing token
+     */
+    401: {
+        error?: string;
+    };
+};
+
+export type GetAuthenticatedError = GetAuthenticatedErrors[keyof GetAuthenticatedErrors];
+
+export type GetAuthenticatedResponses = {
+    /**
+     * Successful response with user information
+     */
+    200: {
+        message?: string;
+        userId?: string;
+        timestamp?: string;
+    };
+};
+
+export type GetAuthenticatedResponse = GetAuthenticatedResponses[keyof GetAuthenticatedResponses];

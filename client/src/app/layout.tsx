@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import ThemeToggle from "@/components/ThemeToggle";
+import ClientProviders from "@/components/ClientProviders";
 
 export const metadata: Metadata = {
   title: "Top Ten Lists!",
@@ -15,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeToggle />
-        {children}
+        <ClientProviders>
+          <ThemeToggle />
+          {children}
+        </ClientProviders>
       </body>
     </html>
   );

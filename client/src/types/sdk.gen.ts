@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetCheckJwtData, GetCheckJwtErrors, GetCheckJwtResponses, GetData, GetHealthData, GetHealthErrors, GetHealthResponses, GetResponses, GetUserByAuth0IdData, GetUserByAuth0IdErrors, GetUserByAuth0IdResponses } from './types.gen';
+import type { GetAuthenticatedData, GetAuthenticatedErrors, GetAuthenticatedResponses, GetCheckJwtData, GetCheckJwtErrors, GetCheckJwtResponses, GetData, GetHealthData, GetHealthErrors, GetHealthResponses, GetResponses, GetUnauthenticatedData, GetUnauthenticatedResponses, GetUserByAuth0IdData, GetUserByAuth0IdErrors, GetUserByAuth0IdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -55,5 +55,23 @@ export const getUserByAuth0Id = <ThrowOnError extends boolean = false>(options: 
 export const getCheckJwt = <ThrowOnError extends boolean = false>(options?: Options<GetCheckJwtData, ThrowOnError>) => (options?.client ?? client).get<GetCheckJwtResponses, GetCheckJwtErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/checkJwt',
+    ...options
+});
+
+/**
+ * Unauthenticated test endpoint
+ *
+ * Public endpoint that doesn't require authentication
+ */
+export const getUnauthenticated = <ThrowOnError extends boolean = false>(options?: Options<GetUnauthenticatedData, ThrowOnError>) => (options?.client ?? client).get<GetUnauthenticatedResponses, unknown, ThrowOnError>({ url: '/unauthenticated', ...options });
+
+/**
+ * Authenticated test endpoint
+ *
+ * Protected endpoint that requires authentication
+ */
+export const getAuthenticated = <ThrowOnError extends boolean = false>(options?: Options<GetAuthenticatedData, ThrowOnError>) => (options?.client ?? client).get<GetAuthenticatedResponses, GetAuthenticatedErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/authenticated',
     ...options
 });
