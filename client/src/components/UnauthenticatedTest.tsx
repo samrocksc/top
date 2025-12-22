@@ -1,14 +1,14 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getUnauthenticated } from "@/types/sdk.gen";
+import { fetchUnauthenticatedData } from "@/api/getUnauthenticated";
 import Link from "next/link";
 
 export default function UnauthenticatedTest() {
   // Test the unauthenticated endpoint
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["unauthenticated"],
-    queryFn: () => getUnauthenticated(),
+    queryFn: () => fetchUnauthenticatedData(),
   });
 
   console.log("data", data);

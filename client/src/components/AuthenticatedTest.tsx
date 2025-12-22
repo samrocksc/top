@@ -1,14 +1,14 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getAuthenticated } from "@/types/sdk.gen";
+import { fetchAuthenticatedData } from "@/api/getAuthenticated";
 import Link from "next/link";
 
 export default function AuthenticatedTest() {
   // Test the authenticated endpoint (will fail without token)
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["authenticated"],
-    queryFn: () => getAuthenticated(),
+    queryFn: () => fetchAuthenticatedData(),
     enabled: false, // Don't fetch automatically since it will fail without auth
   });
 
