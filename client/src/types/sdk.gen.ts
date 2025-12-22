@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetHealthData, GetHealthResponses } from './types.gen';
+import type { GetData, GetHealthData, GetHealthErrors, GetHealthResponses, GetResponses, GetUserByAuth0IdData, GetUserByAuth0IdErrors, GetUserByAuth0IdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -21,6 +21,28 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * Health check endpoint
  *
- * Returns the health status of the application
+ * Returns a simple message to confirm the server is running
  */
-export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>) => (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({ url: '/health', ...options });
+export const get = <ThrowOnError extends boolean = false>(options?: Options<GetData, ThrowOnError>) => (options?.client ?? client).get<GetResponses, unknown, ThrowOnError>({ url: '/', ...options });
+
+/**
+ * Health check endpoint with database connection
+ *
+ * Checks if the server is running and can connect to the database
+ */
+export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>) => (options?.client ?? client).get<GetHealthResponses, GetHealthErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/health',
+    ...options
+});
+
+/**
+ * Get user by Auth0 ID
+ *
+ * Retrieve a user's information using their Auth0 ID
+ */
+export const getUserByAuth0Id = <ThrowOnError extends boolean = false>(options: Options<GetUserByAuth0IdData, ThrowOnError>) => (options.client ?? client).get<GetUserByAuth0IdResponses, GetUserByAuth0IdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/user/{auth0Id}',
+    ...options
+});
