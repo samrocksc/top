@@ -6,12 +6,14 @@ import { useTheme } from "@/hooks/useTheme";
 import Link from "next/link";
 import UnauthenticatedTest from "@/components/UnauthenticatedTest";
 import AuthenticatedTest from "@/components/AuthenticatedTest";
+import AuthButton from "@/components/AuthButton";
 
 export default function Home() {
   const { theme } = useTheme();
   
   return (
     <Container theme={theme}>
+      <AuthButton />
       <Link href="/lists/new">Create New List</Link>
       <Link href="/lists">View Lists</Link>
       
